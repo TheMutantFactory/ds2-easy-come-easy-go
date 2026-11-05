@@ -33,7 +33,7 @@ pub const AOB_TITLE_NOT_CONNECTED_TARGET: &str = "C7 40 08 24 00 00 00 C6 40 0C 
 /// its `this`, closes the menu and asks the game manager to save and go to the title.
 pub const AOB_QUIT_TO_TITLE: &str = "48 83 EC 28 48 8B 0D ? ? ? ? 48 8B 89 E0 22 00 00 E8 ? ? ? ? 48 8B 05 ? ? ? ? 33 D2";
 /// `FeSubStateTitleShutdown`'s enter function, which loads a global and sets its closing byte.
-pub const AOB_TITLE_SHUTDOWN: &str = "48 8B 05 ? ? ? ? C6 80 3A 01 00 00 01 C3";
+pub const AOB_TITLE_SHUTDOWN: &str = "48 8B 05 ? ? ? ? C6 80 3A 01 00 00 01 C3 CC 48 83 EC 68 48 8D 4C 24 20";
 
 /// Every signature the mod depends on, for `resolve` and the offline scanner.
 pub const SIGNATURES: [(&str, &str); 10] = [
