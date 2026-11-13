@@ -9,8 +9,9 @@ A mod for Dark Souls II: Scholar of the First Sin that gets you in and out of th
 Every character gets one Easy Go in its inventory the first time you load it after installing. Put it in
 an item slot to use it.
 
-**This mod keeps the game offline.** While it's installed, the game can't connect to its servers, so
-there's no multiplayer, messages or summoning.
+**This mod keeps the game offline** by default. While it's installed, the game can't connect to its
+servers, so there's no multiplayer, messages or summoning. Seamless Co-op players can turn that off: see
+Settings.
 
 ## Install
 
@@ -26,6 +27,20 @@ turns off everything except the network block.
 That's all. The zip includes [Lazy Loader](https://www.nexusmods.com/darksouls3/mods/677), which loads
 the mod. If you already use it, your `lazyLoad.ini` isn't touched.
 
+## Settings
+
+The first launch writes `Game\dllMods\easy_come_easy_go.ini`. Each line is a setting, `true` or `false`:
+
+| Setting | Default | What it does |
+|---|---|---|
+| `skip_logos` | true | Skips the warning screen and logos. |
+| `skip_network_check` | true | Skips the network check and goes straight to the title menu, offline. |
+| `block_network` | true | Blocks all network access, so a modded game can't go online. |
+| `quit_item` | true | Gives each character the Easy Go item. |
+
+**For Seamless Co-op,** set `skip_network_check` and `block_network` to `false` and keep the rest. If you run
+both Pocket Bonfire and Easy Come, Easy Go, set them in both files: either mod blocking the network blocks it.
+
 ## Rules and limits
 
 - **There's no confirmation.** Using the item plays a short animation, then saves and quits.
@@ -40,7 +55,7 @@ The item's data and text are added in memory, so the mod doesn't replace any gam
 with mods that change params or text.
 
 **If you also use [Pocket Bonfire](https://github.com/TheMutantFactory/ds2-pocket-bonfire), you need its
-version 0.10.1 or later.** Earlier versions can stop one of the two mods working, differently on each
+version 0.11.0 or later.** Earlier versions can stop one of the two mods working, differently on each
 launch.
 
 It has been played alongside Pocket Bonfire, Bonfire Level Up, StatFixer, True Easy Parry, RIP Enemies, No More
@@ -56,6 +71,11 @@ Loading a save that still holds the item after removing the mod is untested, so 
 ## Troubleshooting
 
 `Game\dllMods\easy_come_easy_go.log` records what the mod did. Attach it to bug reports.
+
+- **"signature ... matched 0 times":** the game's code isn't where the mod expects. The line names what it
+  found there, and if another mod has hooked that spot, which DLL it belongs to. Please include that line.
+- **The item never arrives:** look for "couldn't add the item row" or a disabled line in the log. The quick
+  start keeps working either way, since each part starts on its own.
 
 Characters are told apart by name, so two with the same name share a single item. To get a new one, delete
 that character's `.item` file from `Game\dllMods\easy_come_easy_go\`.

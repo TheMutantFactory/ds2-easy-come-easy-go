@@ -7,7 +7,7 @@ Draft for the Dark Souls II page. Publishing is manual: paste these fields, uplo
 |---|---|
 | Name | Easy Come, Easy Go |
 | Author | mutantfactory |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Category | Gameplay |
 | Requirements | None, Lazy Loader is included |
 | Online | Offline only: the mod blocks network access |
