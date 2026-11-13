@@ -72,7 +72,8 @@ version 0.10.1 or later.** Earlier versions can stop one of the two mods working
 launch.
 
 It has been played alongside Pocket Bonfire, Bonfire Level Up, StatFixer, True Easy Parry, RIP Enemies, No More
-Adaptability, Load Loose Param Files, Mod Engine, DS2 Lighting Engine and Texture Renewal Project.
+Adaptability, Load Loose Param Files, Mod Engine, DS2 Lighting Engine, Texture Renewal Project, Seamless
+Co-op 0.0.7 (from 0.2.0) and DS2 Inventory Overhaul / Inventory Suite 1.0.1 (from 0.2.1).
 
 ## Uninstall
 

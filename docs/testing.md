@@ -28,6 +28,7 @@ Releases follow Git Flow (`feature/*` into `develop`, `release/*` or `hotfix/*` 
 | Using Easy Go saves, reaches the title and closes the game | Every in-game scenario |
 | Easy Go used mid-roll, with the menu open, right before a quit | `full` |
 | Works with another mod's hooks in place first | `hooked` |
+| Works alongside DS2 Inventory Suite, which hooks the item code before the mods load | `inventory` |
 | Network check and network left alone with both settings off | `seamless` |
 | Seamless Co-op seen with the default settings, network left alone | `coop` |
 | No false Seamless detection on a normal launch | Every scenario but `coop` |

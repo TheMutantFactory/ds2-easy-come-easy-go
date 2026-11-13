@@ -3,6 +3,21 @@
 Versions follow the release tags. Unreleased work is on `develop` or a `feature/*` branch until it's
 merged and tagged.
 
+## 0.2.1 (unreleased)
+
+### Fixed
+
+- **No Easy Go item with DS2 Inventory Overhaul installed** (Inventory Suite, Nexus 1811). The log said
+  `signature ItemGive matched 0 times`. That mod hooks the game's item-giving function with a 14-byte
+  jump padded to 16 bytes, and the mod only looked past the first 14. It now recognises the hook jump
+  and its padding, whatever the length, and finds the function behind it. Thanks to ElPachu24 for the
+  report and the log.
+
+### Testing
+
+- Played with Inventory Suite 1.0.1 installed, in Pocket Bonfire's new `inventory` scenario. The offline
+  check now hooks every function with 5-, 12- and 14-byte jumps, with and without padding.
+
 ## 0.2.0 (2026-11-13)
 
 Works with Pocket Bonfire 0.10.1 or later. If you also play Seamless Co-op, update Pocket Bonfire to

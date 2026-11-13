@@ -14,11 +14,11 @@ dependencies = [
 
 [[package]]
 name = "ds2"
-version = "0.2.0"
+version = "0.2.1"
 
 [[package]]
 name = "easy-come-easy-go"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "ds2",
  "minhook",
