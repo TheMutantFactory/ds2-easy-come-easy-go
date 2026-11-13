@@ -3,7 +3,7 @@
 Versions follow the release tags. Unreleased work is on `develop` or a `feature/*` branch until it's
 merged and tagged.
 
-## 0.2.0 (unreleased)
+## 0.2.0 (2026-11-13)
 
 Works with Pocket Bonfire 0.10.1 or later. If you also play Seamless Co-op, update Pocket Bonfire to
 0.11.0 too: either mod blocking the network is enough to break Seamless.
