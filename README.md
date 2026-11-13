@@ -109,6 +109,10 @@ This writes `out\easy-come-easy-go-<version>.zip`.
 in-game scenarios, runs from Pocket Bonfire's repo, since players run the two side by side:
 [docs/testing.md](docs/testing.md) has the matrix.
 
+### Forking or reimplementing
+
+[docs/building-on-this.md](docs/building-on-this.md) has the lessons learned and caveats.
+
 ## Credits
 
 - [DS2S-META](https://github.com/pseudostripy/DS2S-META) by pseudostripy: offsets and signatures.
