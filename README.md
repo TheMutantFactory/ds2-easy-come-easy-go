@@ -13,6 +13,13 @@ an item slot to use it.
 servers, so there's no multiplayer, messages or summoning. Under Seamless Co-op it leaves the network
 alone by itself: see Settings.
 
+**Help us find what breaks.** Hit a bug, or found a mod that doesn't get along with this one? Tell us in
+the mod's Nexus Mods thread or at https://mutantfactory.net/feedback. Which other mods you run, and
+`Game\dllMods\easy_come_easy_go.log` from a launch where it went wrong, help most. We can't beat the second
+law of thermodynamics, but we can fix what breaks if we can.
+
+What changed in each version is in [CHANGELOG.md](CHANGELOG.md).
+
 ## Install
 
 You need the Steam version of Scholar of the First Sin, 1.03. On any other exe, the mod logs that and
@@ -95,6 +102,12 @@ You need Rust and the MSVC compiler, plus the Lazy Loader 2.0.0 zip from Nexus:
 ```
 
 This writes `out\easy-come-easy-go-<version>.zip`.
+
+### Tests
+
+`cargo test --workspace` runs the unit tests. The full suite, signatures against the game's exe and the
+in-game scenarios, runs from Pocket Bonfire's repo, since players run the two side by side:
+[docs/testing.md](docs/testing.md) has the matrix.
 
 ## Credits
 
