@@ -7,10 +7,10 @@ Draft for the Dark Souls II page. Publishing is manual: paste these fields, uplo
 |---|---|
 | Name | Easy Come, Easy Go |
 | Author | mutantfactory |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Category | Gameplay |
 | Requirements | None, Lazy Loader is included |
-| Online | Offline only: the mod blocks network access |
+| Online | Offline: the mod blocks network access, except under Seamless Co-op, which it detects |
 | Source | https://github.com/TheMutantFactory/ds2-easy-come-easy-go |
 
 ## Summary
@@ -30,7 +30,9 @@ Gets you in and out of Dark Souls II quickly.
 [/list]
 Every character gets one Easy Go the first time you load it after installing. Put it in an item slot to use it.
 
-[b]This mod keeps the game offline.[/b] While it's installed, the game can't connect to its servers, so there's no multiplayer, messages or summoning.
+[b]This mod keeps the game offline.[/b] While it's installed, the game can't connect to its servers, so there's no multiplayer, messages or summoning. Started through Seamless Co-op's launcher, it leaves the network alone by itself. If you use Mod Engine, set blockNetworkAccess=0 in modengine.ini for Seamless, and back to 1 for normal play.
+
+[b]Help us find what breaks.[/b] Hit a bug, or found a mod that doesn't get along with this one? Tell us in the Posts tab here or at [url=https://mutantfactory.net/feedback]mutantfactory.net/feedback[/url]. Which other mods you run, and Game\dllMods\easy_come_easy_go.log from a launch where it went wrong, help most. We can't beat the second law of thermodynamics, but we can fix what breaks if we can.
 
 [b]Install[/b]
 You need the Steam version of Scholar of the First Sin, 1.03. On any other exe, the mod logs that and turns off everything except the network block.

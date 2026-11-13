@@ -9,8 +9,16 @@ A mod for Dark Souls II: Scholar of the First Sin that gets you in and out of th
 Every character gets one Easy Go in its inventory the first time you load it after installing. Put it in
 an item slot to use it.
 
-**This mod keeps the game offline.** While it's installed, the game can't connect to its servers, so
-there's no multiplayer, messages or summoning.
+**This mod keeps the game offline** by default. While it's installed, the game can't connect to its
+servers, so there's no multiplayer, messages or summoning. Under Seamless Co-op it leaves the network
+alone by itself: see Settings.
+
+**Help us find what breaks.** Hit a bug, or found a mod that doesn't get along with this one? Tell us in
+the mod's Nexus Mods thread or at https://mutantfactory.net/feedback. Which other mods you run, and
+`Game\dllMods\easy_come_easy_go.log` from a launch where it went wrong, help most. We can't beat the second
+law of thermodynamics, but we can fix what breaks if we can.
+
+What changed in each version is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Install
 
@@ -25,6 +33,26 @@ turns off everything except the network block.
 
 That's all. The zip includes [Lazy Loader](https://www.nexusmods.com/darksouls3/mods/677), which loads
 the mod. If you already use it, your `lazyLoad.ini` isn't touched.
+
+## Settings
+
+The first launch writes `Game\dllMods\easy_come_easy_go.ini`. Each line is a setting, `true` or `false`:
+
+| Setting | Default | What it does |
+|---|---|---|
+| `skip_logos` | true | Skips the warning screen and logos. |
+| `skip_network_check` | true | Skips the network check and goes straight to the title menu, offline. |
+| `block_network` | true | Blocks all network access, so a modded game can't go online. |
+| `quit_item` | true | Gives each character the Easy Go item. |
+
+**Seamless Co-op works with the defaults.** When `ds2sc_launcher.exe` starts the game, the mod sees it and
+leaves the network check and the network alone, whatever these settings say, since Seamless needs both
+and keeps the game off FromSoftware's servers itself. Launched through Steam as usual, the game stays
+offline. The log says which it saw.
+
+**If you use Mod Engine,** it blocks the network too: set `blockNetworkAccess=0` in `modengine.ini` to play
+Seamless, or Steam closes the game a few seconds after the launcher starts it. Set it back to `1` before
+launching through Steam, or a game with Mod Engine's mods goes online.
 
 ## Rules and limits
 
@@ -57,6 +85,11 @@ Loading a save that still holds the item after removing the mod is untested, so 
 
 `Game\dllMods\easy_come_easy_go.log` records what the mod did. Attach it to bug reports.
 
+- **"signature ... matched 0 times":** the game's code isn't where the mod expects. The line names what it
+  found there, and if another mod has hooked that spot, which DLL it belongs to. Please include that line.
+- **The item never arrives:** look for "couldn't add the item row" or a disabled line in the log. The quick
+  start keeps working either way, since each part starts on its own.
+
 Characters are told apart by name, so two with the same name share a single item. To get a new one, delete
 that character's `.item` file from `Game\dllMods\easy_come_easy_go\`.
 
@@ -69,6 +102,16 @@ You need Rust and the MSVC compiler, plus the Lazy Loader 2.0.0 zip from Nexus:
 ```
 
 This writes `out\easy-come-easy-go-<version>.zip`.
+
+### Tests
+
+`cargo test --workspace` runs the unit tests. The full suite, signatures against the game's exe and the
+in-game scenarios, runs from Pocket Bonfire's repo, since players run the two side by side:
+[docs/testing.md](docs/testing.md) has the matrix.
+
+### Forking or reimplementing
+
+[docs/building-on-this.md](docs/building-on-this.md) has the lessons learned and caveats.
 
 ## Credits
 
