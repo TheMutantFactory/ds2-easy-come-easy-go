@@ -40,6 +40,10 @@ The first launch writes `Game\dllMods\easy_come_easy_go.ini`. Each line is a set
 
 **For Seamless Co-op,** set `skip_network_check` and `block_network` to `false` and keep the rest. If you run
 both Pocket Bonfire and Easy Come, Easy Go, set them in both files: either mod blocking the network blocks it.
+Mod Engine blocks it too unless `blockNetworkAccess=0` in `modengine.ini`. With any of these blocking, Steam
+closes the game a few seconds after `ds2sc_launcher.exe` starts it. Seamless keeps the game off FromSoftware's
+servers itself, but a normal launch through Steam with nothing blocking goes online with mods loaded, so turn
+the blocks back on before playing without Seamless.
 
 ## Rules and limits
 
