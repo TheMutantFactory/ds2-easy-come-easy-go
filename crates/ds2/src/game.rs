@@ -4,7 +4,7 @@
 //! the DS2S-META way: each offset is added and then dereferenced. The rest were read from the exe.
 
 use crate::module::{self, Module};
-use crate::scan::{rip_relative, Pattern};
+use crate::scan::{self, find_function, rip_relative, Pattern};
 use crate::mem;
 
 /// `SizeOfImage` of the only exe we support. Anything else and the mod switches itself off.
@@ -13,9 +13,9 @@ pub const EXPECTED_IMAGE_SIZE: usize = 0x1D7_6000;
 /// `mov rax, [rip+disp32]` loading the GameManagerImp ("BaseA") global.
 pub const AOB_BASE_A: &str = "48 8B 05 ? ? ? ? 48 8B 58 38 48 85 DB 74 ? F6";
 /// `ApplySpEffect(sp_effect_ctrl*, effect_struct*, _, _, _, f32 = -1.0)` (DS2S-META, S103 entry).
-pub const AOB_APPLY_SP_EFFECT: &str = "48 89 6C 24 F8 48 8D 64 24 F8 48 8D 2D 33 A7 0A 00";
+pub const AOB_APPLY_SP_EFFECT: &str = "48 89 6C 24 F8 48 8D 64 24 F8 48 8D 2D 33 A7 0A 00 48 87 2C 24 48";
 /// `ItemGive(item_bag*, item_structs*, u32 count, 0)`, adding items with no on-screen window.
-pub const AOB_ITEM_GIVE: &str = "48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41";
+pub const AOB_ITEM_GIVE: &str = "48 89 5C 24 18 56 57 41 56 48 83 EC 30 45 8B F1 41 8B F0 48 8B DA 48";
 /// `FmgLookup(fmg*, u32 id) -> *const u16`: finds a string in a loaded text file, null if it has none.
 pub const AOB_FMG_LOOKUP: &str = "48 89 5C 24 08 48 89 7C 24 10 33 DB 44 8B DA 48 8B F9 48 85 C9 75 0D 33 C0 48 8B";
 /// `mov rsi, [rip+disp32]` loading the text manager global, in the function that fetches a string by
@@ -23,7 +23,7 @@ pub const AOB_FMG_LOOKUP: &str = "48 89 5C 24 08 48 89 7C 24 10 33 DB 44 8B DA 4
 pub const AOB_TEXT_MANAGER: &str = "48 8B 35 ? ? ? ? 8B EA 4C 63 F1 48 85 F6";
 /// The title flow's first state, `FeSubStateTitleInitBranch`: a byte saying the opening has been shown
 /// sends it to the title (state 0x17) instead of the warning and logos, as when returning from a game.
-pub const AOB_TITLE_INIT_BRANCH: &str = "33 C0 38 05 ? ? ? ? C6 05 ? ? ? ? 01 0F 95 C0 89 41 10";
+pub const AOB_TITLE_INIT_BRANCH: &str = "33 C0 38 05 ? ? ? ? C6 05 ? ? ? ? 01 0F 95 C0 89 41 10 48";
 /// `FeSubStateTitleSteamNetworkCheck`'s enter function, which picks the next state through `+0x10`: 1
 /// is the online login, 2 is "not connected to Steam", 3 is a frame rate failure.
 pub const AOB_TITLE_NETWORK_CHECK: &str = "48 89 5C 24 08 57 48 83 EC 20 48 8B 05 ? ? ? ? 48 8B D9 48 8B B8 F0 22 00 00";
@@ -35,18 +35,27 @@ pub const AOB_QUIT_TO_TITLE: &str = "48 83 EC 28 48 8B 0D ? ? ? ? 48 8B 89 E0 22
 /// `FeSubStateTitleShutdown`'s enter function, which loads a global and sets its closing byte.
 pub const AOB_TITLE_SHUTDOWN: &str = "48 8B 05 ? ? ? ? C6 80 3A 01 00 00 01 C3 CC 48 83 EC 68 48 8D 4C 24 20";
 
+/// A signature, and where the 1.03 exe has it, for the log when it can't be found.
+pub struct Signature {
+    pub name: &'static str,
+    pub aob: &'static str,
+    pub rva: usize,
+    /// It starts at a function's first byte, where another mod's hook would land.
+    pub start: bool,
+}
+
 /// Every signature the mod depends on, for `resolve` and the offline scanner.
-pub const SIGNATURES: [(&str, &str); 10] = [
-    ("BaseA", AOB_BASE_A),
-    ("ApplySpEffect", AOB_APPLY_SP_EFFECT),
-    ("ItemGive", AOB_ITEM_GIVE),
-    ("FmgLookup", AOB_FMG_LOOKUP),
-    ("TextManager", AOB_TEXT_MANAGER),
-    ("TitleInitBranch", AOB_TITLE_INIT_BRANCH),
-    ("TitleNetworkCheck", AOB_TITLE_NETWORK_CHECK),
-    ("TitleNotConnectedTarget", AOB_TITLE_NOT_CONNECTED_TARGET),
-    ("QuitToTitle", AOB_QUIT_TO_TITLE),
-    ("TitleShutdown", AOB_TITLE_SHUTDOWN),
+pub const SIGNATURES: [Signature; 10] = [
+    Signature { name: "BaseA", aob: AOB_BASE_A, rva: 0x3f5219, start: false },
+    Signature { name: "ApplySpEffect", aob: AOB_APPLY_SP_EFFECT, rva: 0x1b3cbe1, start: true },
+    Signature { name: "ItemGive", aob: AOB_ITEM_GIVE, rva: 0x1a7470, start: true },
+    Signature { name: "FmgLookup", aob: AOB_FMG_LOOKUP, rva: 0x503410, start: true },
+    Signature { name: "TextManager", aob: AOB_TEXT_MANAGER, rva: 0x503630, start: false },
+    Signature { name: "TitleInitBranch", aob: AOB_TITLE_INIT_BRANCH, rva: 0xfd930, start: true },
+    Signature { name: "TitleNetworkCheck", aob: AOB_TITLE_NETWORK_CHECK, rva: 0xf8fb0, start: true },
+    Signature { name: "TitleNotConnectedTarget", aob: AOB_TITLE_NOT_CONNECTED_TARGET, rva: 0xf9470, start: false },
+    Signature { name: "QuitToTitle", aob: AOB_QUIT_TO_TITLE, rva: 0x6ec90, start: true },
+    Signature { name: "TitleShutdown", aob: AOB_TITLE_SHUTDOWN, rva: 0xfde20, start: false },
 ];
 
 /// The check's result meaning "not connected to Steam", the game's own route to playing offline.
@@ -99,14 +108,20 @@ pub struct Addresses {
     pub fmg_lookup: usize,
     /// Address of the text manager global (dereference it to get the manager).
     pub text_manager_global: usize,
+    pub quit_to_title: usize,
+    /// Address of the global holding the closing byte's owner.
+    pub closing_global: usize,
+}
+
+/// The quick start's addresses, found separately so it can work when the item's can't, and the
+/// other way round.
+#[derive(Debug, Clone, Copy)]
+pub struct QuickStart {
     pub title_init_branch: usize,
     /// The byte saying the opening has been shown.
     pub opening_shown: usize,
     pub title_network_check: usize,
     pub title_not_connected_target: usize,
-    pub quit_to_title: usize,
-    /// Address of the global holding the closing byte's owner.
-    pub closing_global: usize,
 }
 
 /// Which of the item's three strings a text file holds.
@@ -121,7 +136,9 @@ pub enum ItemText {
 pub enum ResolveError {
     NoModule,
     WrongVersion { size: usize, timestamp: u32 },
-    Pattern { name: &'static str, hits: usize },
+    /// A signature didn't match once. `detail` says what's at its usual place, and if another mod's
+    /// hook is there, which DLL it leads to.
+    Pattern { name: &'static str, hits: usize, detail: String },
 }
 
 impl std::fmt::Display for ResolveError {
@@ -132,36 +149,57 @@ impl std::fmt::Display for ResolveError {
                 f,
                 "unsupported DarkSoulsII.exe (SizeOfImage {size:#x}, timestamp {timestamp:#x}); expected {EXPECTED_IMAGE_SIZE:#x} (Steam 1.03)"
             ),
-            ResolveError::Pattern { name, hits } => write!(f, "signature {name} matched {hits} times, expected 1"),
+            ResolveError::Pattern { name, hits, detail } => {
+                write!(f, "signature {name} matched {hits} times, expected 1 ({detail})")
+            }
         }
     }
 }
 
-pub fn resolve() -> Result<Addresses, ResolveError> {
+/// The game's exe, if it's the version the mod supports.
+pub fn game_module() -> Result<Module, ResolveError> {
     let module = module::main_module().ok_or(ResolveError::NoModule)?;
     if module.size != EXPECTED_IMAGE_SIZE {
         return Err(ResolveError::WrongVersion { size: module.size, timestamp: module.timestamp });
     }
-    let find = |name: &'static str, aob: &str| {
-        Pattern::parse(aob).find_unique(&module).map_err(|hits| ResolveError::Pattern { name, hits })
-    };
-    let target = |name: &'static str, hit: usize, disp: usize, len: usize| {
-        rip_relative(hit, disp, len).ok_or(ResolveError::Pattern { name, hits: 0 })
-    };
-    let title_init_branch = find("TitleInitBranch", AOB_TITLE_INIT_BRANCH)?;
+    Ok(module)
+}
+
+/// Finds one signature: as a function start, tolerating another mod's hook there, or inside a
+/// function, exactly. A failure explains what's at the usual place.
+fn find(module: &Module, name: &'static str) -> Result<usize, ResolveError> {
+    let sig = SIGNATURES.iter().find(|s| s.name == name).expect("known signature");
+    let found = if sig.start { find_function(module, sig.aob) } else { Pattern::parse(sig.aob).find_unique(module) };
+    found.map_err(|hits| ResolveError::Pattern { name, hits, detail: scan::describe(module, sig.rva) })
+}
+
+fn target(name: &'static str, hit: usize, disp: usize, len: usize) -> Result<usize, ResolveError> {
+    rip_relative(hit, disp, len).ok_or(ResolveError::Pattern { name, hits: 0, detail: "unreadable operand".into() })
+}
+
+/// The item's addresses: giving it, spotting its use, its text, and quitting.
+pub fn resolve(module: &Module) -> Result<Addresses, ResolveError> {
+    let module = *module;
     Ok(Addresses {
         module,
-        base_a_global: target("BaseA", find("BaseA", AOB_BASE_A)?, 3, 7)?,
-        apply_sp_effect: find("ApplySpEffect", AOB_APPLY_SP_EFFECT)?,
-        item_give: find("ItemGive", AOB_ITEM_GIVE)?,
-        fmg_lookup: find("FmgLookup", AOB_FMG_LOOKUP)?,
-        text_manager_global: target("TextManager", find("TextManager", AOB_TEXT_MANAGER)?, 3, 7)?,
+        base_a_global: target("BaseA", find(&module, "BaseA")?, 3, 7)?,
+        apply_sp_effect: find(&module, "ApplySpEffect")?,
+        item_give: find(&module, "ItemGive")?,
+        fmg_lookup: find(&module, "FmgLookup")?,
+        text_manager_global: target("TextManager", find(&module, "TextManager")?, 3, 7)?,
+        quit_to_title: find(&module, "QuitToTitle")?,
+        closing_global: target("TitleShutdown", find(&module, "TitleShutdown")?, 3, 7)?,
+    })
+}
+
+pub fn resolve_quick_start(module: &Module) -> Result<QuickStart, ResolveError> {
+    let title_init_branch = find(module, "TitleInitBranch")?;
+    Ok(QuickStart {
         title_init_branch,
-        opening_shown: target("TitleInitBranch", title_init_branch, 4, 8)?,
-        title_network_check: find("TitleNetworkCheck", AOB_TITLE_NETWORK_CHECK)?,
-        title_not_connected_target: find("TitleNotConnectedTarget", AOB_TITLE_NOT_CONNECTED_TARGET)? + 3,
-        quit_to_title: find("QuitToTitle", AOB_QUIT_TO_TITLE)?,
-        closing_global: target("TitleShutdown", find("TitleShutdown", AOB_TITLE_SHUTDOWN)?, 3, 7)?,
+        // From the `mov byte [rip+x], 1` at +8 rather than the read at +2, which a hook would cover.
+        opening_shown: target("TitleInitBranch", title_init_branch + 8, 2, 7)?,
+        title_network_check: find(module, "TitleNetworkCheck")?,
+        title_not_connected_target: find(module, "TitleNotConnectedTarget")? + 3,
     })
 }
 
