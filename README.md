@@ -10,8 +10,8 @@ Every character gets one Easy Go in its inventory the first time you load it aft
 an item slot to use it.
 
 **This mod keeps the game offline** by default. While it's installed, the game can't connect to its
-servers, so there's no multiplayer, messages or summoning. Seamless Co-op players can turn that off: see
-Settings.
+servers, so there's no multiplayer, messages or summoning. Under Seamless Co-op it leaves the network
+alone by itself: see Settings.
 
 ## Install
 
@@ -38,12 +38,14 @@ The first launch writes `Game\dllMods\easy_come_easy_go.ini`. Each line is a set
 | `block_network` | true | Blocks all network access, so a modded game can't go online. |
 | `quit_item` | true | Gives each character the Easy Go item. |
 
-**For Seamless Co-op,** set `skip_network_check` and `block_network` to `false` and keep the rest. If you run
-both Pocket Bonfire and Easy Come, Easy Go, set them in both files: either mod blocking the network blocks it.
-Mod Engine blocks it too unless `blockNetworkAccess=0` in `modengine.ini`. With any of these blocking, Steam
-closes the game a few seconds after `ds2sc_launcher.exe` starts it. Seamless keeps the game off FromSoftware's
-servers itself, but a normal launch through Steam with nothing blocking goes online with mods loaded, so turn
-the blocks back on before playing without Seamless.
+**Seamless Co-op works with the defaults.** When `ds2sc_launcher.exe` starts the game, the mod sees it and
+leaves the network check and the network alone, whatever these settings say, since Seamless needs both
+and keeps the game off FromSoftware's servers itself. Launched through Steam as usual, the game stays
+offline. The log says which it saw.
+
+**If you use Mod Engine,** it blocks the network too: set `blockNetworkAccess=0` in `modengine.ini` to play
+Seamless, or Steam closes the game a few seconds after the launcher starts it. Set it back to `1` before
+launching through Steam, or a game with Mod Engine's mods goes online.
 
 ## Rules and limits
 
