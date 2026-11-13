@@ -132,6 +132,7 @@ fn log_network() {
     if NETWORK_LET_THROUGH.swap(false, Ordering::SeqCst) {
         log::line("network start let through: Seamless Co-op's DLL is loaded".into());
     }
+    ds2::hooks::log_changes();
 }
 
 fn run() {
@@ -149,6 +150,7 @@ fn run() {
             Err(e) => log::line(format!("couldn't write the settings file: {e}")),
         }
     }
+    ds2::module::log_other_dlls();
     let seamless = seamless();
     if let Some(why) = seamless {
         log::line(format!("Seamless Co-op ({why}): network check and network left alone"));
@@ -188,6 +190,8 @@ fn run() {
         watch_network_only();
     }
     log::line("ready".into());
+    ds2::hooks::watch("ApplySpEffect", addrs.apply_sp_effect);
+    ds2::hooks::watch("FmgLookup", addrs.fmg_lookup);
 
     let dir = dll_path()
         .and_then(|p| p.parent().map(|d| d.join("easy_come_easy_go")))

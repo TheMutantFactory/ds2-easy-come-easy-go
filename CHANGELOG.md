@@ -3,6 +3,30 @@
 Versions follow the release tags. Unreleased work is on `develop` or a `feature/*` branch until it's
 merged and tagged.
 
+## 0.3.0 (unreleased)
+
+Holding up better when other mods change the game's code. The same changes as Pocket Bonfire 0.12.0,
+in the shared code.
+
+### Added
+
+- **Functions are found by their known address** when another mod changed them so much that no
+  signature matches. Only on the exact 1.03 exe, and only if the code there still looks like the
+  function. The log says when this happens and which DLL changed it.
+- **The log lists the other mods,** at startup and half a minute later, with versions and folders.
+- **A watch on our hooks:** if a mod that loads later writes over one, the log names the DLL it now leads
+  into.
+
+### Fixed
+
+- The logo skip's flag address could have been read wrong behind a long hook jump. It's now checked, and
+  only the logo skip switches off if it can't be found.
+
+### Testing
+
+- Both mods put their items back when another mod swaps the item table mid-game (Pocket Bonfire's
+  `hooked` scenario).
+
 ## 0.2.1 (unreleased)
 
 ### Fixed
