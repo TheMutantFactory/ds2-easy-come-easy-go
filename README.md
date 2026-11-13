@@ -55,7 +55,7 @@ The item's data and text are added in memory, so the mod doesn't replace any gam
 with mods that change params or text.
 
 **If you also use [Pocket Bonfire](https://github.com/TheMutantFactory/ds2-pocket-bonfire), you need its
-version 0.11.0 or later.** Earlier versions can stop one of the two mods working, differently on each
+version 0.10.1 or later.** Earlier versions can stop one of the two mods working, differently on each
 launch.
 
 It has been played alongside Pocket Bonfire, Bonfire Level Up, StatFixer, True Easy Parry, RIP Enemies, No More
