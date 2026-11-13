@@ -72,7 +72,8 @@ version 0.10.1 or later.** Earlier versions can stop one of the two mods working
 launch.
 
 It has been played alongside Pocket Bonfire, Bonfire Level Up, StatFixer, True Easy Parry, RIP Enemies, No More
-Adaptability, Load Loose Param Files, Mod Engine, DS2 Lighting Engine and Texture Renewal Project.
+Adaptability, Load Loose Param Files, Mod Engine, DS2 Lighting Engine, Texture Renewal Project, Seamless
+Co-op 0.0.7 (from 0.2.0) and DS2 Inventory Overhaul / Inventory Suite 1.0.1 (from 0.3.0).
 
 ## Uninstall
 
@@ -89,6 +90,14 @@ Loading a save that still holds the item after removing the mod is untested, so 
   found there, and if another mod has hooked that spot, which DLL it belongs to. Please include that line.
 - **The item never arrives:** look for "couldn't add the item row" or a disabled line in the log. The quick
   start keeps working either way, since each part starts on its own.
+- **"using its known address":** another mod changed that part of the game's code past recognition, and
+  the mod found it anyway. The line names the DLL. Nothing to do unless something stops working.
+- **"another mod changed it after our hook went in":** a mod that loaded later hooked the same function.
+  Usually both keep working. If the feature named there stops, that mod is the first suspect.
+- **"other DLLs:"** lists the mods and overlays in your game. It's what we'd ask you for, so please keep it
+  in the log you send.
+- **No log file at all:** the mod never loaded. Usually another mod's `dinput8.dll` replaced Lazy Loader's;
+  rename that one, move it to `Game\dllMods\`, and put Lazy Loader's back.
 
 Characters are told apart by name, so two with the same name share a single item. To get a new one, delete
 that character's `.item` file from `Game\dllMods\easy_come_easy_go\`.
